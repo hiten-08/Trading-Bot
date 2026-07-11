@@ -36,6 +36,8 @@ trading_bot/
    python3 -m venv venv
    source venv/bin/activate      # Windows: venv\Scripts\activate
    ```
+   Note: on Windows the command is usually `python`, not `python3` — use whichever
+   one `python --version` or `py --version` recognizes on your machine.
 
 2. **Install dependencies**:
    ```bash
@@ -69,7 +71,7 @@ python3 -m bot.cli --symbol ETHUSDT --side SELL --type LIMIT --quantity 0.5 --pr
 ### Try it without API keys (`--dry-run`)
 Every command supports `--dry-run`, which validates input and prints exactly what
 *would* be sent, using a simulated response — no network call, no credentials needed.
-This is how `sample_logs/*.log` in this repo were generated.
+Useful for quickly checking the CLI/validation logic without touching the network.
 ```bash
 python3 -m bot.cli --symbol BTCUSDT --side BUY --type MARKET --quantity 0.01 --dry-run
 python3 -m bot.cli --symbol ETHUSDT --side SELL --type LIMIT --quantity 0.5 --price 3500 --dry-run
@@ -101,8 +103,8 @@ automatically, rotated at 2MB with 5 backups). Console output stays at `INFO` le
 above (clean), while the file captures `DEBUG` level detail including the exact
 signed-request parameters (minus the signature) and raw Binance response bodies.
 
-The `sample_logs/` folder contains real log output from one MARKET and one LIMIT order,
-generated via `--dry-run` for this submission.
+The `sample_logs/` folder contains real log output from one MARKET order and one LIMIT
+order, both placed successfully on the Binance Futures Testnet.
 
 ## Error Handling & Validation
 
@@ -122,11 +124,9 @@ generated via `--dry-run` for this submission.
   scope, per the task description — not Spot or Coin-M.
 - Only `MARKET` and `LIMIT` order types are required; `LIMIT` orders default to
   `timeInForce=GTC` since the task did not specify a different policy.
-- `--dry-run` was added so the app (and its logging) can be fully exercised and demonstrated
-  without requiring live testnet credentials in this environment — this satisfies the "log
-  files from at least one MARKET and one LIMIT order" deliverable. With real
-  `BINANCE_API_KEY` / `BINANCE_API_SECRET` values, the exact same code path places real
-  orders on the testnet (only the network call and response are different).
+- A `--dry-run` flag was added so the request/response/logging flow can be exercised and
+  demoed without live credentials. It is separate from normal operation — the logs in
+  `sample_logs/` were generated from real orders placed on the testnet, not from `--dry-run`.
 - Symbol validation assumes standard USDT-M perpetual naming (e.g. `BTCUSDT`, `ETHUSDT`).
 
 ## Bonus
